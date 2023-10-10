@@ -128,7 +128,9 @@ local connect = function(self,ws_url,ws_protocol,ssl_params)
     return nil,err,nil
   end
   if protocol == 'wss' then
+    local timeout = self.sock:gettimeout()
     self.sock = ssl.wrap(self.sock, ssl_params)
+    self.sock:settimeout(timeout)
     self.sock:sni(host)
     self.sock:dohandshake()
   elseif protocol ~= "ws" then
