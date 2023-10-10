@@ -50,6 +50,11 @@ local upgrade_request = function(req)
     format('Sec-WebSocket-Protocol: %s',table.concat(req.protocols,', ')),
     'Sec-WebSocket-Version: 13',
   }
+  if req.headers then
+    for header, value in pairs(req.headers) do
+      lines[#lines+1] = tostring(header)..": "..tostring(value)
+    end
+  end
   if req.origin then
     tinsert(lines,string.format('Origin: %s',req.origin))
   end

@@ -117,7 +117,7 @@ local close = function(self,code,reason)
   return was_clean,code,reason or ''
 end
 
-local connect = function(self,ws_url,ws_protocol,ssl_params)
+local connect = function(self,ws_url,ws_protocol,ssl_params, headers)
   if self.state ~= 'CLOSED' then
     return nil,'wrong state',nil
   end
@@ -149,7 +149,8 @@ local connect = function(self,ws_url,ws_protocol,ssl_params)
     host = host,
     port = port,
     protocols = ws_protocols_tbl,
-    uri = uri
+    uri = uri,
+    headers = headers
   }
   local n,err = self:sock_send(req)
   if n ~= #req then
