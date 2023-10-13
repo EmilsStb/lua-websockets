@@ -52,7 +52,7 @@ local upgrade_request = function(req)
   }
   if req.headers then
     for header, value in pairs(req.headers) do
-      lines[#lines+1] = tostring(header)..": "..tostring(value)
+      tinsert(lines,string.format("%s: %s", header, value))
     end
   end
   if req.origin then
