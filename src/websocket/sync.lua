@@ -22,10 +22,14 @@ local receive = function(self, customTimeout)
     return nil,nil,was_clean,code,reason or 'closed'
   end
   while true do
-    local prevTimeout = self.sock:gettimeout()
-    self.sock:settimeout(customTimeout)
-    local chunk,err = self:sock_receive(bytes)
-    self.sock:settimeout(prevTimeout)
+    local chunk, err
+    if customTimeout then
+      self.sock:settimeout(customTimeout)
+      chunk,err = self:sock_receive(bytes)
+      self.sock:settimeout(self.sock.originalTimeoutValue)
+    else
+      chunk,err = self:sock_receive(bytes)
+    end
 
     if err then
       if customTimeout and err == 'timeout' then
@@ -139,6 +143,7 @@ local connect = function(self,ws_url,ws_protocol,ssl_params, headers)
     local timeout = self.sock:gettimeout()
     self.sock = ssl.wrap(self.sock, ssl_params)
     self.sock:settimeout(timeout)
+    self.sock.originalTimeoutValue = timeout
     self.sock:sni(host)
     self.sock:dohandshake()
   elseif protocol ~= "ws" then
