@@ -5,7 +5,7 @@ local ssl = require'ssl'
 local tinsert = table.insert
 local tconcat = table.concat
 
-local receive = function(self)
+local receive = function(self, customTimeout)
   if self.state ~= 'OPEN' and not self.is_closing then
     return nil,nil,false,1006,'wrong state'
   end
@@ -22,9 +22,17 @@ local receive = function(self)
     return nil,nil,was_clean,code,reason or 'closed'
   end
   while true do
+    local prevTimeout = self.sock:gettimeout()
+    self.sock:settimeout(customTimeout)
     local chunk,err = self:sock_receive(bytes)
+    self.sock:settimeout(prevTimeout)
+
     if err then
-      return clean(false,1006,err)
+      if customTimeout and err == 'timeout' then
+        return nil,nil,true,1006,'customTimeout'
+      else
+        return clean(false,1006,err)
+      end
     end
     encoded = encoded..chunk
     local decoded,fin,opcode,_,masked = frame.decode(encoded)
