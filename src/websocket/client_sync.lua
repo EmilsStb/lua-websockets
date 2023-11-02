@@ -10,7 +10,7 @@ local new = function(ws)
     self.sock = socket.tcp()
     if ws.timeout ~= nil then
       self.sock:settimeout(ws.timeout)
-      self.sock.originalTimeoutValue = ws.timeout
+      self.originalTimeoutValue = ws.timeout
     end
     local _,err = self.sock:connect(host,port)
     if err then
