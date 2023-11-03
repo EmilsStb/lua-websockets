@@ -32,7 +32,7 @@ local receive = function(self, customTimeout)
     end
 
     if err then
-      if customTimeout and err == 'timeout' then
+      if customTimeout and (err == 'timeout' or err == 'wantread') then -- wantread in case of wss, timeout in case of ws
         return nil,nil,true,1006,'customTimeout'
       else
         return clean(false,1006,err)
